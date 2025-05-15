@@ -6,7 +6,7 @@ dotenv.config();
 const ConnectionString = process.env.CONECTION_STRING
 const DBConnection = async ()=>{
 try{
-    await mongoose.connect(ConnectionString);
+    await mongoose.connect(ConnectionString, {dbName:"SocialMedia"});
     console.log("Connected to MongoDB Successfully");
 }catch(error){
     console.log(error)
