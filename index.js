@@ -15,15 +15,20 @@ LikesManagement = require('./Routes/LikesManagementRoute');
 FriendSystem = require('./Routes/FriendSystemRoute');
 AdminManagement = require('./Routes/AdminManagementRoute')
 
+
+
 //Middleware
 app.use(Express.json());
 app.use(cookie());
+app.get("/test", (req,res)=>{
+    res.status(200).send("hello world")
+})
 app.use('/auth',UserAuthentication);
 app.use('/post',PostManagement);
 app.use('/comments',CommentManagement);
 app.use('/likes',LikesManagement);
 app.use('/friend',FriendSystem);
-app.use('/admin',AdminManagement)
+app.use('/admin',AdminManagement);
 
 
 app.listen(port,(error)=>{
