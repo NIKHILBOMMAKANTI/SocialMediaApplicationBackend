@@ -1,59 +1,100 @@
-const { Body } = require("express-validator");
+const { body } = require("express-validator");
 
 //SignUp
-Body("username")
+const signupValidation = [
+body("username")
   .notEmpty()
   .withMessage("Username is Required")
   .isLength({ min: 6, max: 30 })
   .withMessage("Username must be between 6 and 30 characters")
-  .isAlpha()
-  .withMessage("Username must contain only alphabetic characters");
+  .matches(/^[A-Za-z\s]+$/)
+  .withMessage("Username must contain only alphabetic characters"),
 
-Body("email")
+body("email")
   .notEmpty()
   .withMessage("Email is Required")
   .isEmail()
-  .withMessage("Please Enter the Valid Email Address");
+  .withMessage("Please Enter the Valid Email Address"),
 
-Body("password")
+// body("password")
+//   .notEmpty()
+//   .withMessage("Password  is Required")
+//   .isLength({ min: 8 })
+//   .withMessage("Password must be at least 8 characters long")
+//   .matches(/[a-z]/)
+//   .matches(/[A-Z]/)
+//   .matches(/\d/)
+//   .matches(/[@$!%*?&]/)
+//   .withMessage(
+//     "Password must be have atleast one Uppercase , Lowercase, Digit and a Special Character"
+//   ),
+
+body("password")
   .notEmpty()
   .withMessage("Password  is Required")
   .isLength({ min: 8 })
   .withMessage("Password must be at least 8 characters long")
   .matches(/[a-z]/)
+  .withMessage("Password Must have atleast one lowercase")
   .matches(/[A-Z]/)
+  .withMessage("Password Must have atleast one Uppercase")
   .matches(/\d/)
+  .withMessage("Password Must have atleast one Digit")
   .matches(/[@$!%*?&]/)
-  .withMessage(
-    "Password must be have atleast one Uppercase , Lowercase, Digit and a Special Character"
-  );
+  .withMessage("Password must be have atleast one  Special Character"),
 
-Body("confirmpassword")
+body("confirmpassword")
   .notEmpty()
   .withMessage("Confirm password is required")
   .custom((value , {req})=>{
     if(value != req.body.password){
         throw new Error("Password Does not Match")
     }
-  });
+    return true
+  }),
 
-Body("bio")
+body("bio")
   .optional()
   .isLength({ min: 50, max: 150 })
-  .withMessage("Bio should be between 50 and 150 characters long");
+  .withMessage("Bio should be between 50 and 150 characters long"),
 
-Body("gender")
+body("gender")
   .optional()
   .isIn(["Male", "Female", "Other"])
-  .withMessage("Gender should have one of the Following:Male,Female,Other");
+  .withMessage("Gender should have one of the Following:Male,Female,Other"),
 
-Body("interests")
+body("interests")
   .optional()
   .isLength({ min: 5, max: 15 })
-  .withMessage("Intrest Should be between 50 to 150 characters long");
+  .withMessage("Intrest Should be between 50 to 150 characters long"),
 
-Body("location")
+body("location")
   .optional()
   .isLength({ min: 5 })
-  .withMessage("Loaction should be minimum of 5 characters Long");
+  .withMessage("Loaction should be minimum of 5 characters Long"),
 
+];
+
+const loginvalidation = [
+  body("email")
+  .notEmpty()
+  .withMessage("Email is Required")
+  .isEmail()
+  .withMessage("Please Enter the Valid Email Address"),
+
+  body("password")
+  .notEmpty()
+  .withMessage("Password  is Required")
+  .isLength({ min: 8 })
+  .withMessage("Password must be at least 8 characters long")
+  .matches(/[a-z]/)
+  .withMessage("Password Must have atleast one lowercase")
+  .matches(/[A-Z]/)
+  .withMessage("Password Must have atleast one Uppercase")
+  .matches(/\d/)
+  .withMessage("Password Must have atleast one Digit")
+  .matches(/[@$!%*?&]/)
+  .withMessage("Password must be have atleast one  Special Character"),
+
+]
+module.exports = {signupValidation,loginvalidation}

@@ -2,9 +2,16 @@ const User = require("../Model/UserSchema.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require('dotenv').config();
+const {validationResult} = require('express-validator');
 
 const Register = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json({
+        errors:errors.array()
+      })
+    }
     const {username,email,password,role,bio,gender,interests,location} = req.body;
 
     const user_data = await User.find({
@@ -29,10 +36,19 @@ const Register = async (req, res) => {
       location,
     });
     await newUser.save();
+    const registereduserdata = {
+      username:newUser.username,
+      email:newUser.email,
+      role:newUser.role,
+      bio:newUser.bio,
+      gender:newUser.gender,
+      interests:newUser.interests,
+      location:newUser.location
+    }
     return res.status(200).json({
       success:true,
       message: "Registered successfully",
-      data: newUser,
+      data: registereduserdata,
     });
   } catch (error) {
     return res.status(500).json({
@@ -44,6 +60,12 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json({
+        errors:errors.array()
+      })
+    }
     const { email, password } = req.body;
     const user_data = await User.find({ email: email });
     if (user_data.length > 0) {

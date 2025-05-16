@@ -1,7 +1,14 @@
 const Comment = require("../Model/CommentSchema.js");
+const {validationResult} = require('express-validator')
 
 const addcomment = async (req, res) => {
   try {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+          return res.status(400).json({
+            message:errors.array()
+          })
+        }
         const { _id, username, email, password, bio, gender, location, role } = req.user_data;
     if (role !== "User") {
       return res.status(403).json({
@@ -52,6 +59,12 @@ const addcomment = async (req, res) => {
 
 const addreply = async (req, res) => {
   try {
+    const errors = validationResult(req);
+        if(!errors.isEmpty()){
+          return res.status(400).json({
+            message:errors.array()
+          })
+        }
         const { _id, username, email, password, bio, gender, location, role } = req.user_data;
     if (role !== "User") {
       return res.status(403).json({
@@ -69,7 +82,6 @@ const addreply = async (req, res) => {
         })
     }
     const {reply} = req.body;
-    // const { _id } = req.user_data;
     const userid = _id.toString();
     
     const replydata = {

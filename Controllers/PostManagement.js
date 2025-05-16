@@ -10,9 +10,15 @@ const dotenv = require("dotenv");
 dotenv.config();
 const { getmediaS3key } = require("../helper/fileuploadhelper.js");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-
+const {validationResult} = require('express-validator');
 const createpost = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json({
+        errors:errors.array()
+      });
+    }
     const { _id, username, email, password, bio, gender, location, role } =
       req.user_data;
     if (role !== "User") {
@@ -110,6 +116,12 @@ const getallpost = async (req, res) => {
 
 const updatepost = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json({
+        errors:errors.array()
+      });
+    }
     const { _id, username, email, password, bio, gender, location, role } =
       req.user_data;
     if (role !== "User") {
