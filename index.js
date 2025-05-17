@@ -5,6 +5,7 @@ const app = Express();
 const port = process.env.PORT
 const cookie = require('cookie-parser');
 const DBConnection = require('./Config/DBConnection')
+const CORS = require('cors');
 DBConnection();
 
 //Importing all the Required Routes
@@ -20,16 +21,17 @@ AdminManagement = require('./Routes/AdminManagementRoute')
 //Middleware
 app.use(Express.json());
 app.use(cookie());
-app.get("/test", (req,res)=>{
-    res.status(200).send("hello world")
-})
 app.use('/auth',UserAuthentication);
 app.use('/post',PostManagement);
 app.use('/comments',CommentManagement);
 app.use('/likes',LikesManagement);
 app.use('/friend',FriendSystem);
 app.use('/admin',AdminManagement);
+app.use(CORS());
 
+app.get("/test", (req,res)=>{
+    res.status(200).send("hello world")
+})
 
 app.listen(port,(error)=>{
     if(error){
