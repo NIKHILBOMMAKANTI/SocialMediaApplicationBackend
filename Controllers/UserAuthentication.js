@@ -3,6 +3,11 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 require('dotenv').config();
 const {validationResult} = require('express-validator');
+const {upload} = require('../utils/multerConfig.js');
+const {S3} = require('../utils/AwsS3Config.js');
+const {GetObjectCommand,PutObjectCommand} = require('@aws-sdk/client-s3');
+const {getSignedUrl} = require('@aws-sdk/s3-request-presigner');
+
 
 const Register = async (req, res) => {
   try {
@@ -12,23 +17,29 @@ const Register = async (req, res) => {
         errors:errors.array()
       })
     }
+    const {fieldname,originalname,mimetype,buffer} = req.files.profilepicture[0];
+    const profilepictureS3key = `ProfilePictures/${originalname}-${Date.now()}`;
+    await S3.send(new PutObjectCommand({
+      Bucket:process.env.AWS_BUCKET_NAME,
+      Key:profilepictureS3key,
+      Body:buffer,
+      ContentType:mimetype
+    }))
     const {username,email,password,role,bio,gender,interests,location} = req.body;
-
     const user_data = await User.find({
       $or: [{ username: username }, { email: email }],
     });
-    console.log(user_data);
     if (user_data.length != 0) {
       return res.json({
         success:false,
         message: "Username or Email already Exists",
       });
     }
-
     const newUser = await User({
       username,
       email,
       password,
+      profilepictureS3key,
       role,
       bio,
       gender,
@@ -36,6 +47,11 @@ const Register = async (req, res) => {
       location,
     });
     await newUser.save();
+    const presignedUrl = await getSignedUrl(S3,new GetObjectCommand({
+      Bucket:process.env.AWS_BUCKET_NAME,
+      Key:profilepictureS3key
+    }),{ expiresIn: 86400 });
+    console.log(presignedUrl);
     const registereduserdata = {
       username:newUser.username,
       email:newUser.email,
@@ -43,7 +59,8 @@ const Register = async (req, res) => {
       bio:newUser.bio,
       gender:newUser.gender,
       interests:newUser.interests,
-      location:newUser.location
+      location:newUser.location,
+      presignedUrl
     }
     return res.status(200).json({
       success:true,

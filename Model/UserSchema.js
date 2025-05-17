@@ -3,6 +3,7 @@ const UserSchema = mongoose.Schema({
     username:{type:String,required:true,unique:true},
     email:{type:String,required:true,unique:true},
     password:{type:String,required:true},
+    profilepictureS3key:{type:String,required:true},
     bio:{type:String,required:false},
     gender:{type:String,required:false},
     interests:{type:String,required:false},
