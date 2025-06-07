@@ -28,8 +28,9 @@ app.use('/likes',LikesManagement);
 app.use('/friend',FriendSystem);
 app.use('/admin',AdminManagement);
 app.use(CORS({
-    "origin": "*",
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.get("/test", (req,res)=>{
