@@ -27,7 +27,10 @@ app.use('/comments',CommentManagement);
 app.use('/likes',LikesManagement);
 app.use('/friend',FriendSystem);
 app.use('/admin',AdminManagement);
-app.use(CORS());
+app.use(CORS({
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+}));
 
 app.get("/test", (req,res)=>{
     res.status(200).send("hello world")
