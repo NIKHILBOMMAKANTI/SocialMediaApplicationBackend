@@ -6,11 +6,17 @@ const port = process.env.PORT
 const cookie = require('cookie-parser');
 const DBConnection = require('./Config/DBConnection')
 const CORS = require('cors');
+
 app.use(CORS({
-  origin: '*', 
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+
+app.options('*', CORS());
+
 DBConnection();
 
 //Importing all the Required Routes
