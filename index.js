@@ -6,6 +6,11 @@ const port = process.env.PORT
 const cookie = require('cookie-parser');
 const DBConnection = require('./Config/DBConnection')
 const CORS = require('cors');
+app.use(CORS({
+  origin: '*', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 DBConnection();
 
 //Importing all the Required Routes
@@ -27,11 +32,7 @@ app.use('/comments',CommentManagement);
 app.use('/likes',LikesManagement);
 app.use('/friend',FriendSystem);
 app.use('/admin',AdminManagement);
-app.use(CORS({
-  origin: '*', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+
 
 app.get("/test", (req,res)=>{
     res.status(200).send("hello world")
