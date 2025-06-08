@@ -11,6 +11,8 @@ const {getSignedUrl} = require('@aws-sdk/s3-request-presigner');
 
 const Register = async (req, res) => {
   try {
+    console.log(req.files);
+    console.log(req.body);
     const errors = validationResult(req);
     if(!errors.isEmpty()){
       return res.status(400).json({
