@@ -16,18 +16,6 @@ body("email")
   .isEmail()
   .withMessage("Please Enter the Valid Email Address"),
 
-// body("password")
-//   .notEmpty()
-//   .withMessage("Password  is Required")
-//   .isLength({ min: 8 })
-//   .withMessage("Password must be at least 8 characters long")
-//   .matches(/[a-z]/)
-//   .matches(/[A-Z]/)
-//   .matches(/\d/)
-//   .matches(/[@$!%*?&]/)
-//   .withMessage(
-//     "Password must be have atleast one Uppercase , Lowercase, Digit and a Special Character"
-//   ),
 
 body("password")
   .notEmpty()
@@ -65,7 +53,7 @@ body("gender")
 
 body("interests")
   .optional()
-  .isLength({ min: 5, max: 15 })
+  .isLength({ min: 50, max: 150 })
   .withMessage("Intrest Should be between 50 to 150 characters long"),
 
 body("location")
