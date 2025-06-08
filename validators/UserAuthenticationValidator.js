@@ -51,10 +51,10 @@ body("gender")
   .isIn(["Male", "Female", "Other"])
   .withMessage("Gender should have one of the Following:Male,Female,Other"),
 
-body("interests")
-  .optional()
-  .isLength({ min: 50, max: 150 })
-  .withMessage("Intrest Should be between 50 to 150 characters long"),
+// body("interests")
+//   .optional()
+//   .isLength({ min: 50, max: 150 })
+//   .withMessage("Intrest Should be between 50 to 150 characters long"),
 
 body("location")
   .optional()
