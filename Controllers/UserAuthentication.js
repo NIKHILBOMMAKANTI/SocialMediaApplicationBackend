@@ -93,9 +93,9 @@ const Login = async (req, res) => {
             const secretkey = process.env.JWT_SECRET_KEY;
             const Token = jwt.sign(payload,secretkey,{expiresIn:'1d'});
             res.cookie('auth_token',Token,{
-                // httpOnly:true,
+                httpOnly:true,
                 secure:true,
-                sameSite:'Strict',
+                sameSite:'None',
                 maxAge: 86400000,
             }).status(200).json({
                 success:true,
