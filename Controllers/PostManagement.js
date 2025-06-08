@@ -29,7 +29,7 @@ const createpost = async (req, res) => {
           "Unauthorized. Your account does not have permission to access this resource",
       });
     }
-    const userid = req.params.id;
+    const userid = _id;
     const { content } = req.body;
     const mediaS3key = getmediaS3key(req.files);
     const { fieldname, originalname, mimetype, buffer } = req.files.media[0];
