@@ -51,10 +51,10 @@ body("gender")
   .isIn(["Male", "Female", "Other"])
   .withMessage("Gender should have one of the Following:Male,Female,Other"),
 
-// body("interests")
-//   .optional()
-//   .isLength({ min: 50, max: 150 })
-//   .withMessage("Intrest Should be between 50 to 150 characters long"),
+body("interests")
+  .optional()
+  .isLength({ min: 50, max: 150 })
+  .withMessage("Intrest Should be between 50 to 150 characters long"),
 
 body("location")
   .optional()
@@ -73,16 +73,7 @@ const loginvalidation = [
   body("password")
   .notEmpty()
   .withMessage("Password  is Required")
-  .isLength({ min: 8 })
-  .withMessage("Password must be at least 8 characters long")
-  .matches(/[a-z]/)
-  .withMessage("Password Must have atleast one lowercase")
-  .matches(/[A-Z]/)
-  .withMessage("Password Must have atleast one Uppercase")
-  .matches(/\d/)
-  .withMessage("Password Must have atleast one Digit")
-  .matches(/[@$!%*?&]/)
-  .withMessage("Password must be have atleast one  Special Character"),
+  
 
 ]
 module.exports = {signupValidation,loginvalidation}
