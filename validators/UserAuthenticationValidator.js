@@ -53,8 +53,8 @@ body("gender")
 
 body("interests")
   .optional()
-  .isLength({ min: 50, max: 150 })
-  .withMessage("Intrest Should be between 50 to 150 characters long"),
+  .isLength({ min: 50 })
+  .withMessage("Intrest should be a minimum of 50 characters long"),
 
 body("location")
   .optional()
