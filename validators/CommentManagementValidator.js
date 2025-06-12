@@ -9,7 +9,7 @@ const addcommentvalidator = [
 const addreplyvalidator = [
     body("reply")
       .notEmpty()
-      .withMessage("Comment should not be Empty")
+      .withMessage("Reply should not be Empty")
       .isLength({ min: 20})
       .withMessage("Reply must be at least 20 characters long.")
 ]

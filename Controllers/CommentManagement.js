@@ -96,6 +96,7 @@ const addreply = async (req, res) => {
     const replydata = {
       userid,
       reply,
+      commentid
     };
 
     const postdata = await Comment.findByIdAndUpdate(
