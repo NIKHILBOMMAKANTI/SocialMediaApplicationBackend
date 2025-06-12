@@ -145,7 +145,7 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
     // console.log(CommentAndReplyData.userid.profilepictureS3key,"From Get Comments and reply post Api");
     const commentsWithPics = await Promise.all(
       CommentAndReplyData.map(async (Commentdata) => {
-      const command = GetObjectCommand({
+      const command = new GetObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: Commentdata.userid.profilepictureS3key,
       });
