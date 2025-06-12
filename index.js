@@ -15,9 +15,12 @@ app.use(CORS({
 }));
 
 
-app.options('*', CORS());
+//app.options('*', CORS());
 
 DBConnection();
+
+app.use(Express.json());
+app.use(cookie());
 
 //Importing all the Required Routes
 UserAuthentication = require('./Routes/UserAuthenticationRoute');
@@ -27,11 +30,7 @@ LikesManagement = require('./Routes/LikesManagementRoute');
 FriendSystem = require('./Routes/FriendSystemRoute');
 AdminManagement = require('./Routes/AdminManagementRoute')
 
-
-
 //Middleware
-app.use(Express.json());
-app.use(cookie());
 app.use('/auth',UserAuthentication);
 app.use('/post',PostManagement);
 app.use('/comments',CommentManagement);
