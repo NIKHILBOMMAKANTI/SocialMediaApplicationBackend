@@ -41,6 +41,7 @@ const addcomment = async (req, res) => {
       ]);
       return res.status(200).json({
         success: true,
+        message:"Comment Added Successfully",
         data: commentdata,
       });
     } else {
