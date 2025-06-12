@@ -1,20 +1,21 @@
 const Comment = require("../Model/CommentSchema.js");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
-const {getSignedUrl} = require('@aws-sdk/s3-request-presigner');
-const { S3 } =  require('../utils/AwsS3Config.js');
-const { GetObjectCommand } = require('@aws-sdk/client-s3');
-const {validationResult} = require('express-validator')
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { S3 } = require("../utils/AwsS3Config.js");
+const { GetObjectCommand } = require("@aws-sdk/client-s3");
+const { validationResult } = require("express-validator");
 
 const addcomment = async (req, res) => {
   try {
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-          return res.status(400).json({
-            message:errors.array()
-          })
-        }
-        const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: errors.array(),
+      });
+    }
+    const { _id, username, email, password, bio, gender, location, role } =
+      req.user_data;
     if (role !== "User") {
       return res.status(403).json({
         success: false,
@@ -46,7 +47,7 @@ const addcomment = async (req, res) => {
       ]);
       return res.status(200).json({
         success: true,
-        message:"Comment Added Successfully",
+        message: "Comment Added Successfully",
         data: commentdata,
       });
     } else {
@@ -66,12 +67,13 @@ const addcomment = async (req, res) => {
 const addreply = async (req, res) => {
   try {
     const errors = validationResult(req);
-        if(!errors.isEmpty()){
-          return res.status(400).json({
-            message:errors.array()
-          })
-        }
-        const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: errors.array(),
+      });
+    }
+    const { _id, username, email, password, bio, gender, location, role } =
+      req.user_data;
     if (role !== "User") {
       return res.status(403).json({
         success: false,
@@ -81,32 +83,36 @@ const addreply = async (req, res) => {
       });
     }
     const commentid = req.params.id;
-    if(!commentid){
-        return res.status(400).json({
-            success:false,
-            message:"Comment Id is required"
-        })
+    if (!commentid) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment Id is required",
+      });
     }
-    const {reply} = req.body;
+    const { reply } = req.body;
     const userid = _id.toString();
-    
+
     const replydata = {
-        userid,
-        reply,
-    }
-    
-    const postdata = await Comment.findByIdAndUpdate(commentid,{$push:{replies:replydata}},{new:true})
-    if(!postdata){
-        return res.status(404).json({
-            success:false,
-            message:"Error Adding Reply"
-        })
+      userid,
+      reply,
+    };
+
+    const postdata = await Comment.findByIdAndUpdate(
+      commentid,
+      { $push: { replies: replydata } },
+      { new: true }
+    );
+    if (!postdata) {
+      return res.status(404).json({
+        success: false,
+        message: "Error Adding Reply",
+      });
     }
     const ReplyWithUserDetails = await postdata.populate("replies.userid");
     return res.status(200).json({
-        message:"Reply Added Successfully",
-        data:ReplyWithUserDetails
-    })
+      message: "Reply Added Successfully",
+      data: ReplyWithUserDetails,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -115,9 +121,10 @@ const addreply = async (req, res) => {
   }
 };
 
-const getCommentsAndRepliesByPostId = async (req,res)=>{
-    try{
-          const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+const getCommentsAndRepliesByPostId = async (req, res) => {
+  try {
+    const { _id, username, email, password, bio, gender, location, role } =
+      req.user_data;
     if (role !== "User") {
       return res.status(403).json({
         success: false,
@@ -126,40 +133,49 @@ const getCommentsAndRepliesByPostId = async (req,res)=>{
           "Unauthorized. Your account does not have permission to access this resource",
       });
     }
-        postid = req.params.id
-        if(!postid){
-            return res.status(400).json({
-                success:false,
-                message:"Post Id is Required"
-            })
-        }
-
-        const CommentAndReplyData = await Comment.find({postid:postid}).populate("userid")
-        console.log(CommentAndReplyData.userid.profilepictureS3key,"From Get Comments and reply post Api");
-        const command = GetObjectCommand({
-          Bucket:process.env.AWS_BUCKET_NAME,
-          Key:CommentAndReplyData.userid.profilepictureS3key
-        })
-        const presignedUrl = getSignedUrl(S3,command,{expiresIn:	21600})
-        console.log(presignedUrl);
-        if(!CommentAndReplyData || CommentAndReplyData.length === 0){
-            return res.status(404).json({
-                success:false,
-                message:"No Comments or Reply's are found for this Post"
-            })
-        }
-
-        return res.status(200).json({
-            success:true,
-            data:{...CommentAndReplyData,...presignedUrl}
-        })
-        
-    }catch(error){
-        return res.status(500).json({
-            success:false,
-            message:error.message
-        })
+    postid = req.params.id;
+    if (!postid) {
+      return res.status(400).json({
+        success: false,
+        message: "Post Id is Required",
+      });
     }
 
-}
-module.exports = { addcomment, addreply, getCommentsAndRepliesByPostId};
+    const CommentAndReplyData = await Comment.find({ postid: postid }).populate("userid").lean();
+    // console.log(CommentAndReplyData.userid.profilepictureS3key,"From Get Comments and reply post Api");
+    const commentsWithPics = await Promise.all(
+      CommentAndReplyData.map(async (Commentdata) => {
+      const command = GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: Commentdata.userid.profilepictureS3key,
+      });
+      const presignedUrl = await getSignedUrl(S3, command, { expiresIn: 21600 });
+      return {
+        ...Commentdata,
+        presignedUrl:presignedUrl
+      }
+
+    })
+    );
+    
+
+    
+    if (!CommentAndReplyData || CommentAndReplyData.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No Comments or Reply's are found for this Post",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: commentsWithPics
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+module.exports = { addcomment, addreply, getCommentsAndRepliesByPostId };
