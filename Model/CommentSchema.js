@@ -8,6 +8,7 @@ const CommentSchema = mongoose.Schema({
     comment:{type:String,required:true},
     replies:{type:[{
         userid:{type:mongoose.Schema.Types.ObjectId,ref:User},
+        commentid:{type:mongoose.Schema.Types.ObjectId},
         reply:{type:String},
         createdAt:{type:Date,default:Date.now()}
     }],required:false},
