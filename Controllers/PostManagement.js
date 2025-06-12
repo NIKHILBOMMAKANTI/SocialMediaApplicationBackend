@@ -11,6 +11,7 @@ dotenv.config();
 const { getmediaS3key } = require("../helper/fileuploadhelper.js");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const {validationResult} = require('express-validator');
+const moment = require('moment');
 const createpost = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -95,9 +96,11 @@ const getallpost = async (req, res) => {
         const presignedUrl = await getSignedUrl(S3, command, {
           expiresIn: "6h",
         });
+        const timeAgo = moment(Post.createdAt).fromNow();
         return {
           ...Post,
           presignedUrl,
+          timeAgo,
         };
       }))
     );
