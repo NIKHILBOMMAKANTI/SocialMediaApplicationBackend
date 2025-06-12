@@ -135,11 +135,13 @@ const getCommentsAndRepliesByPostId = async (req,res)=>{
         }
 
         const CommentAndReplyData = await Comment.find({postid:postid}).populate("userid")
+        console.log(CommentAndReplyData.userid.profilepictureS3key,"From Get Comments and reply post Api");
         const command = GetObjectCommand({
           Bucket:process.env.AWS_BUCKET_NAME,
           Key:CommentAndReplyData.userid.profilepictureS3key
         })
         const presignedUrl = getSignedUrl(S3,command,{expiresIn:	21600})
+        console.log(presignedUrl);
         if(!CommentAndReplyData || CommentAndReplyData.length === 0){
             return res.status(404).json({
                 success:false,
