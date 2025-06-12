@@ -129,7 +129,7 @@ const getCommentsAndRepliesByPostId = async (req,res)=>{
             })
         }
 
-        const CommentAndReplyData = await Comment.find({postid:postid})
+        const CommentAndReplyData = await Comment.find({postid:postid}).populate("userid")
         if(!CommentAndReplyData || CommentAndReplyData.length === 0){
             return res.status(404).json({
                 success:false,

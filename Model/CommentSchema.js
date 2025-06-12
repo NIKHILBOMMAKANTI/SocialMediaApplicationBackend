@@ -3,8 +3,8 @@ const Post = require('./PostSchema.js');
 
 const mongoose = require('mongoose');
 const CommentSchema = mongoose.Schema({
-    postid:{type:mongoose.Schema.Types.ObjectId,required:true,ref:Post },
-    userid:{type:mongoose.Schema.Types.ObjectId,required:true,ref:User},
+    postid:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"Post"},
+    userid:{type:mongoose.Schema.Types.ObjectId,required:true,ref:"User"},
     comment:{type:String,required:true},
     replies:{type:[{
         userid:{type:mongoose.Schema.Types.ObjectId,ref:User},
