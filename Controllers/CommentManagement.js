@@ -5,6 +5,7 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3 } = require("../utils/AwsS3Config.js");
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
 const { validationResult } = require("express-validator");
+const moment = require('moment');
 
 const addcomment = async (req, res) => {
   try {
@@ -142,7 +143,6 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
     }
 
     const CommentAndReplyData = await Comment.find({ postid: postid }).populate("userid").lean();
-    // console.log(CommentAndReplyData.userid.profilepictureS3key,"From Get Comments and reply post Api");
     const commentsWithPics = await Promise.all(
       CommentAndReplyData.map(async (Commentdata) => {
       const command = new GetObjectCommand({
@@ -150,9 +150,11 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
         Key: Commentdata.userid.profilepictureS3key,
       });
       const presignedUrl = await getSignedUrl(S3, command, { expiresIn: 21600 });
+      const timeAgo = moment(Commentdata.createdAt).fromNow();
       return {
         ...Commentdata,
-        presignedUrl:presignedUrl
+        presignedUrl:presignedUrl,
+        timeAgo:timeAgo
       }
 
     })
