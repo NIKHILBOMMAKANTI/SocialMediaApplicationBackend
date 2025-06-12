@@ -1,4 +1,9 @@
 const Comment = require("../Model/CommentSchema.js");
+const dotenv = require('dotenv');
+dotenv.config();
+const {getSignedUrl} = require('@aws-sdk/s3-request-presigner');
+const { S3 } =  require('../utils/AwsS3Config.js');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
 const {validationResult} = require('express-validator')
 
 const addcomment = async (req, res) => {
@@ -130,6 +135,11 @@ const getCommentsAndRepliesByPostId = async (req,res)=>{
         }
 
         const CommentAndReplyData = await Comment.find({postid:postid}).populate("userid")
+        const command = GetObjectCommand({
+          Bucket:process.env.AWS_BUCKET_NAME,
+          Key:CommentAndReplyData.userid.profilepictureS3key
+        })
+        const presignedUrl = getSignedUrl(S3,command,{expiresIn:	21600})
         if(!CommentAndReplyData || CommentAndReplyData.length === 0){
             return res.status(404).json({
                 success:false,
@@ -139,7 +149,7 @@ const getCommentsAndRepliesByPostId = async (req,res)=>{
 
         return res.status(200).json({
             success:true,
-            data:CommentAndReplyData
+            data:{...CommentAndReplyData,...presignedUrl}
         })
         
     }catch(error){
