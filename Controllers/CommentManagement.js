@@ -5,7 +5,7 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3 } = require("../utils/AwsS3Config.js");
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
 const { validationResult } = require("express-validator");
-const moment = require('moment');
+const moment = require("moment");
 
 const addcomment = async (req, res) => {
   try {
@@ -96,7 +96,7 @@ const addreply = async (req, res) => {
     const replydata = {
       userid,
       reply,
-      commentid
+      commentid,
     };
 
     const postdata = await Comment.findByIdAndUpdate(
@@ -143,8 +143,10 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
       });
     }
 
-    const CommentAndReplyData = await Comment.find({ postid: postid }).populate("userid").lean();
-        if (!CommentAndReplyData || CommentAndReplyData.length === 0) {
+    const CommentAndReplyData = await Comment.find({ postid: postid })
+      .populate("userid")
+      .lean();
+    if (!CommentAndReplyData || CommentAndReplyData.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No Comments or Reply's are found for this Post",
@@ -152,23 +154,24 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
     }
     const commentsWithPics = await Promise.all(
       CommentAndReplyData.map(async (Commentdata) => {
-      const command = new GetObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: Commentdata.userid.profilepictureS3key,
-      });
-      const presignedUrl = await getSignedUrl(S3, command, { expiresIn: 21600 });
-      const timeAgo = moment(Commentdata.createdAt).fromNow();
-      return {
-        ...Commentdata,
-        presignedUrl:presignedUrl,
-        timeAgo:timeAgo
-      }
-
-    })
+        const command = new GetObjectCommand({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: Commentdata.userid.profilepictureS3key,
+        });
+        const presignedUrl = await getSignedUrl(S3, command, {
+          expiresIn: 21600,
+        });
+        const timeAgo = moment(Commentdata.createdAt).fromNow();
+        return {
+          ...Commentdata,
+          presignedUrl: presignedUrl,
+          timeAgo: timeAgo,
+        };
+      })
     );
     return res.status(200).json({
       success: true,
-      data: commentsWithPics
+      data: commentsWithPics,
     });
   } catch (error) {
     return res.status(500).json({
@@ -178,9 +181,10 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
   }
 };
 
-const getRepliesByCommentId = async (req,res)=>{
-  try{
-    const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+const getRepliesByCommentId = async (req, res) => {
+  try {
+    const { _id, username, email, password, bio, gender, location, role } =
+      req.user_data;
     if (role !== "User") {
       return res.status(403).json({
         success: false,
@@ -203,20 +207,34 @@ const getRepliesByCommentId = async (req,res)=>{
         message: "Invallid Comment Id",
       });
     }
+    const Replies = CommentData.replies;
+    const RepliesData = await Promise.all(
+      Replies.map(async (Replydata) => {
+        const command = new GetObjectCommand({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: Replydata.userid.profilepictureS3key,
+        });
+        const presignedUrl = await getSignedUrl(S3, command, {
+          expiresIn: 21600,
+        });
+        const timeAgo = moment(Replydata.createdAt).fromNow();
+        return {
+          ...Replydata,
+          presignedUrl: presignedUrl,
+          timeAgo: timeAgo,
+        };
+      })
+    );
+
     return res.status(200).json({
       success: true,
-      data: CommentData
+      data: RepliesData,
     });
-
-  }catch(error){
-
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
-
-
-}
-module.exports = { addcomment, addreply, getCommentsAndRepliesByPostId,getRepliesByCommentId}
+};
+module.exports = {addcomment,addreply,getCommentsAndRepliesByPostId,getRepliesByCommentId};
