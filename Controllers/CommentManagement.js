@@ -163,7 +163,7 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
     
 
     
-    if (!CommentAndReplyData || CommentAndReplyData.length === 0) {
+    if (!commentsWithPics || commentsWithPics.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No Comments or Reply's are found for this Post",
@@ -181,4 +181,5 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
     });
   }
 };
-module.exports = { addcomment, addreply, getCommentsAndRepliesByPostId };
+
+module.exports = { addcomment, addreply, getCommentsAndRepliesByPostId};
