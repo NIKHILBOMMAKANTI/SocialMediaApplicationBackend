@@ -8,6 +8,6 @@ const {addcommentvalidator,addreplyvalidator} = require('../validators/CommentMa
 Route.post("/addcomment/:id",verifyToken,addcommentvalidator,addcomment);
 Route.post("/addreply/:id",verifyToken,addreplyvalidator,addreply);
 Route.get("/getCommentsAndRepliesByPostId/:id",verifyToken,getCommentsAndRepliesByPostId)
-Route.get("/getRepliesByCommentId/:id",verifyToken,)
+Route.get("/getRepliesByCommentId/:id",verifyToken,getRepliesByCommentId)
 
 module.exports = Route
