@@ -208,6 +208,7 @@ const getRepliesByCommentId = async (req, res) => {
       });
     }
     const Replies = CommentData.replies;
+    console.log(Replies);
     const RepliesData = await Promise.all(
       Replies.map(async (Replydata) => {
         const command = new GetObjectCommand({
@@ -225,7 +226,7 @@ const getRepliesByCommentId = async (req, res) => {
         };
       })
     );
-
+    console.log(RepliesData);
     return res.status(200).json({
       success: true,
       data: RepliesData,
