@@ -144,6 +144,12 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
     }
 
     const CommentAndReplyData = await Comment.find({ postid: postid }).populate("userid").lean();
+        if (!CommentAndReplyData || CommentAndReplyData.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No Comments or Reply's are found for this Post",
+      });
+    }
     const commentsWithPics = await Promise.all(
       CommentAndReplyData.map(async (Commentdata) => {
       const command = new GetObjectCommand({
@@ -160,16 +166,6 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
 
     })
     );
-    
-
-    
-    if (!commentsWithPics || commentsWithPics.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No Comments or Reply's are found for this Post",
-      });
-    }
-
     return res.status(200).json({
       success: true,
       data: commentsWithPics
@@ -182,4 +178,45 @@ const getCommentsAndRepliesByPostId = async (req, res) => {
   }
 };
 
-module.exports = { addcomment, addreply, getCommentsAndRepliesByPostId};
+const getRepliesByCommentId = async (req,res)=>{
+  try{
+    const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+    if (role !== "User") {
+      return res.status(403).json({
+        success: false,
+        title: "Access Denied",
+        message:
+          "Unauthorized. Your account does not have permission to access this resource",
+      });
+    }
+    const commentid = req.params.id;
+    if (!commentid) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment Id is Required",
+      });
+    }
+    const CommentData = await Comment.findById(commentid).populate("userid").lean();
+    if (!CommentData) {
+      return res.status(404).json({
+        success: false,
+        message: "Invallid Comment Id",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: CommentData
+    });
+
+  }catch(error){
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
+  }
+
+
+}
+module.exports = { addcomment, addreply, getCommentsAndRepliesByPostId,getRepliesByCommentId}
