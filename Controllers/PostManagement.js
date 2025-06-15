@@ -87,6 +87,7 @@ const getallpost = async (req, res) => {
     const allpost = await Post.find({ isPrivate: false })
       .populate("userid")
       .lean();
+      console.log(Post.mediaS3key);
     const PostWithPresignedUrl = await Promise.all(
       (presignedData = allpost.map(async (Post) => {
         const command = new GetObjectCommand({
