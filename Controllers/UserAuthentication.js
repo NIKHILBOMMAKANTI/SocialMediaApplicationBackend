@@ -7,6 +7,9 @@ const {upload} = require('../utils/multerConfig.js');
 const {S3} = require('../utils/AwsS3Config.js');
 const {GetObjectCommand,PutObjectCommand} = require('@aws-sdk/client-s3');
 const {getSignedUrl} = require('@aws-sdk/s3-request-presigner');
+const { S3 } = require("../utils/AwsS3Config.js");
+const {GetObjectCommand} = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 
 const Register = async (req, res) => {
@@ -123,6 +126,48 @@ const Login = async (req, res) => {
     });
   }
 };
-module.exports = { Register, Login };
+
+const fetchUserDetailsById = async(req,res)=>{
+  try{
+    const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+    if (role !== "User") {
+      return res.status(403).json({
+        success: false,
+        title: "Access Denied",
+        message:
+          "Unauthorized. Your account does not have permission to access this resource",
+      });
+    }
+    const userid = req.params.userid
+     if (!userid) {
+      return res.status(404).json({
+        success: false,
+        message: "User Id is Required",
+      });
+    }
+    const UserData = await User.findOne({_id:userid}).lean();
+      const command = new GetObjectCommand({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: UserData.profilepictureS3key,
+        });
+        const presignedUrl = await getSignedUrl(S3, command, {expiresIn: "6h"});
+        const userInfoWithPic  = {
+          ...UserData,
+          ProfilePicUrl:presignedUrl
+        }
+        res.status(200).json({
+          success:true,
+          data:userInfoWithPic
+        })
+  }catch(error){
+    
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  
+  }
+}
+module.exports = { Register, Login, fetchUserDetailsById};
 
 
