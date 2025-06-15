@@ -200,7 +200,7 @@ const getRepliesByCommentId = async (req, res) => {
         message: "Comment Id is Required",
       });
     }
-    const CommentData = await Comment.findById(commentid).populate("userid").lean();
+    const CommentData = await Comment.findById(commentid).populate("replies.userid").lean();
     if (!CommentData) {
       return res.status(404).json({
         success: false,
