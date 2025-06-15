@@ -10,7 +10,7 @@ import verifyToken from '../Middleware/Authentication/verifyToken.js';
 //Routes
 Route.post("/Register",upload.fields([{name:'profilepicture',maxCount:1}]),signupValidation,PasswordHash,Register);
 Route.post("/login",loginvalidation,Login)
-Route.post("/fetchUserDetailsById",verifyToken,fetchUserDetailsById)
+Route.get("/fetchUserDetailsById",verifyToken,fetchUserDetailsById)
 
 
 
