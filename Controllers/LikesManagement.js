@@ -1,5 +1,5 @@
 const Likes = require("../Model/LikesSchema.js");
-
+const mongoose = require('mongoose');
 const addLikeToPost = async (req, res) => {
   try {
         const { _id, username, email, password, bio, gender, location, role } = req.user_data;
@@ -79,7 +79,9 @@ const unLikePost = async (req, res) => {
         message: "Please login to perform this action.",
       });
     }
-    const deletedpost = await Likes.findOneAndDelete({ postid, userid });
+    const Postid = mongoose.Types.ObjectId(postid);
+    const Userid = mongoose.Types.ObjectId(userid);
+    const deletedpost = await Likes.findOneAndDelete({ postid:Postid, userid:Userid });
     if (!deletedpost) {
       return res.status(404).json({
         success: false,
