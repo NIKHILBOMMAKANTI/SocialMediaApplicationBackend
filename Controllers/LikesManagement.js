@@ -79,8 +79,8 @@ const unLikePost = async (req, res) => {
         message: "Please login to perform this action.",
       });
     }
-    const Postid = mongoose.Types.ObjectId(postid);
-    const Userid = mongoose.Types.ObjectId(userid);
+    const Postid = new mongoose.Types.ObjectId(postid);
+    const Userid = new mongoose.Types.ObjectId(userid);
     const deletedpost = await Likes.findOneAndDelete({ postid:Postid, userid:Userid });
     if (!deletedpost) {
       return res.status(404).json({
