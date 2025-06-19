@@ -202,7 +202,7 @@ const getCurrentUserFriends = async (req,res)=>{
 
 const unfriendUser = async(req,res)=>{
     try{
-            const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+    const { _id, username, email, password, bio, gender, location, role } = req.user_data;
     if (role !== "User") {
       return res.status(403).json({
         success: false,
@@ -217,11 +217,12 @@ const unfriendUser = async(req,res)=>{
                 message:"ID is Required",
             })
         }
-        const deletedRequest = await Friend.findOneAndDelete({_id:id,status:'Accepted'})
+        // const deletedRequest = await Friend.findOneAndDelete({_id:id,status:'Accepted'})
+        const deletedRequest = await Friend.findOneAndDelete({status:'Accepted',$or:[{senderid:id,reciverid:_id},{senderid:_id,reciverid:id}]})
         if(!deletedRequest){
             return res.status(404).json({
                 success:false,
-                message:"Request Not Found"
+                message:"No active Friend Request found between the users."
             })
         }
         return res.status(200).json({
