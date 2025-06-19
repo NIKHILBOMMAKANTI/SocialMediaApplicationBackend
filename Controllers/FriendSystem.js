@@ -2,7 +2,7 @@ const Friend = require('../Model/FriendRequestSchama.js');
 
 const SendFriendRequest = async(req,res)=>{
     try{
-            const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+    const { _id, username, email, password, bio, gender, location, role } = req.user_data;
     if (role !== "User") {
       return res.status(403).json({
         success: false,
@@ -11,6 +11,7 @@ const SendFriendRequest = async(req,res)=>{
           "Unauthorized. Your account does not have permission to access this resource",
       });
     }
+    
         reciverId = req.params.id;
         if(!reciverId){
             return res.status(400).json({
@@ -24,6 +25,14 @@ const SendFriendRequest = async(req,res)=>{
             return res.status(401).json({
                 success:false,
                 message:"Please login to perform this action."
+            })
+        }
+
+        const FriendRequestData = await Friend.find({$and:[{senderid:senderId},{reciverid:reciverId}]});
+        if(FriendRequestData.length>0){
+            return res.status(200).json({
+                success:true,
+                message:"Friend Request Already Sent"
             })
         }
         const Request = await new Friend({
