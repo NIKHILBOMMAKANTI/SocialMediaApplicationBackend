@@ -203,6 +203,7 @@ const getCurrentUserFriends = async (req,res)=>{
 const unfriendUser = async(req,res)=>{
     try{
     const { _id, username, email, password, bio, gender, location, role } = req.user_data;
+    console.log(_id);
     if (role !== "User") {
       return res.status(403).json({
         success: false,
