@@ -87,22 +87,29 @@ const getallpost = async (req, res) => {
     const allpost = await Post.find({ isPrivate: false })
       .populate("userid")
       .lean();
+    const PostWithPresignedUrl = await Promise.all(
+      allpost.map(async (Post) => {
       console.log(Post.mediaS3key);
       console.log(Post.userid.profilepictureS3key);
-    const PostWithPresignedUrl = await Promise.all(
-      (presignedData = allpost.map(async (Post) => {
+        let presignedUrl = null
+        let userpresignedurl = null
+        if(Post.mediaS3key){
         const command = new GetObjectCommand({
           Bucket: process.env.AWS_BUCKET_NAME,
           Key: Post.mediaS3key,
         });
-        const presignedUrl = await getSignedUrl(S3, command, {
+        presignedUrl = await getSignedUrl(S3, command, {
           expiresIn: "6h",
         });
+      }
+
+      if(Post.userid.profilepictureS3key){
         const usercommand = new GetObjectCommand({
           Bucket: process.env.AWS_BUCKET_NAME,
           Key: Post.userid.profilepictureS3key,
         })
-        const userpresignedurl = await getSignedUrl(S3,usercommand,{expiresIn:"6h"})
+        userpresignedurl = await getSignedUrl(S3,usercommand,{expiresIn:"6h"})
+      }
         const timeAgo = moment(Post.createdAt).fromNow();
         return {
           ...Post,
@@ -110,7 +117,8 @@ const getallpost = async (req, res) => {
           userpresignedurl,
           timeAgo,
         };
-      }))
+
+      })
     );
 
     res.status(200).json({
