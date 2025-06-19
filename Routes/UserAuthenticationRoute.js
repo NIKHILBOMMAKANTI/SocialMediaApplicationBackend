@@ -5,7 +5,7 @@ const {Register, Login, fetchUserDetailsById} = require('../Controllers/UserAuth
 const PasswordHash = require('../Middleware/Authentication/PasswordHash.js');
 const {signupValidation,loginvalidation} = require('../validators/UserAuthenticationValidator.js')
 const {upload} = require('../utils/multerConfig.js')
-import verifyToken from '../Middleware/Authentication/verifyToken.js';
+const verifyToken =  require('../Middleware/Authentication/verifyToken.js');
 
 //Routes
 Route.post("/Register",upload.fields([{name:'profilepicture',maxCount:1}]),signupValidation,PasswordHash,Register);
