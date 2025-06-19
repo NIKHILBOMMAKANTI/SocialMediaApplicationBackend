@@ -149,9 +149,10 @@ const fetchUserDetailsById = async(req,res)=>{
           Key: UserData.profilepictureS3key,
         });
         const presignedUrl = await getSignedUrl(S3, command, {expiresIn: "6h"});
+        const intrestArray = await UserData.interests.split(',');
         const userInfoWithPic  = {
           ...UserData,
-          ProfilePicUrl:presignedUrl
+          ProfilePicUrl:presignedUrl,
         }
         res.status(200).json({
           success:true,
