@@ -7,7 +7,6 @@ const {upload} = require('../utils/multerConfig.js');
 const {S3} = require('../utils/AwsS3Config.js');
 const {GetObjectCommand,PutObjectCommand} = require('@aws-sdk/client-s3');
 const {getSignedUrl} = require('@aws-sdk/s3-request-presigner');
-const { S3 } = require("../utils/AwsS3Config.js");
 const {GetObjectCommand} = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
