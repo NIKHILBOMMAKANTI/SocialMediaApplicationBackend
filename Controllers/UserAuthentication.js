@@ -153,6 +153,7 @@ const fetchUserDetailsById = async(req,res)=>{
         const userInfoWithPic  = {
           ...UserData,
           ProfilePicUrl:presignedUrl,
+          intrestArray,
         }
         res.status(200).json({
           success:true,
